@@ -6,6 +6,8 @@
 #define PIN_NEOPIXEL 1
 #define PIN_IR       2
 #define PIN_SWITCH   3
+#define PIN_JUMPER_1 0
+#define PIN_JUMPER_2 4
 #else
 #define PIN_IR_VCC   2
 #define PIN_IR_GND   3
@@ -21,6 +23,10 @@
 #define MODE_RANDOM 2
 #define MODE_RAINBOW 3
 #define MODE_MAX 3
+
+#define JUMPER_OPEN 0
+#define JUMPER_A    1
+#define JUMPER_B    2
 
 // Remote control codes
 #define IR_DFROBOT_POWER            0xFD00FF
@@ -170,6 +176,7 @@ private:
   void rgbToHsv(int red, int green, int blue, int& hue, int& saturation, int& brightness);
   void setPixelColor(int n, unsigned char red, unsigned char green, unsigned char blue, unsigned int brightness = 256);
   void setPixelHueSat(int index, int hue, int saturation, int brightness);
+  int checkJumper(int pin);
 protected:
   unsigned char mMode;
   int mHue;
@@ -186,6 +193,11 @@ App::App()
 }
 
 void App::setup(void) {
+  pinMode(PIN_JUMPER_1, INPUT);
+  digitalWrite(PIN_JUMPER_1, HIGH);
+  pinMode(PIN_JUMPER_2, INPUT);
+  digitalWrite(PIN_JUMPER_2, HIGH);
+
   pinMode(PIN_SWITCH, INPUT);     // Switch is input
   digitalWrite(PIN_SWITCH, HIGH); // enable internal pullup
 
@@ -197,6 +209,8 @@ void App::setup(void) {
   pinMode(PIN_IR_VCC, OUTPUT);
   digitalWrite(PIN_IR_VCC, HIGH);
 #endif
+
+  setMode(((checkJumper(PIN_JUMPER_1) == JUMPER_B) ? 1 : 0) + (checkJumper(PIN_JUMPER_2) == JUMPER_B ? 2 : 0));
 
   strip.begin();
   strip.show();
@@ -486,6 +500,22 @@ void App::setPixelHueSat(int index, int hue, int saturation, int brightness) {
   int blue;
   hsvToRgb(hue, saturation, brightness, red, green, blue); 
   strip.setPixelColor(index, red, green, blue); 
+}
+
+int App::checkJumper(int pin) {
+  int result = JUMPER_OPEN;
+  if (digitalRead(pin) == LOW) {
+    result = JUMPER_B;
+  } else {
+    pinMode(PIN_SWITCH, OUTPUT);
+    digitalWrite(PIN_SWITCH, LOW);
+    if (digitalRead(pin) == LOW) {
+      result = JUMPER_A;
+    }
+    pinMode(PIN_SWITCH, INPUT);
+    digitalWrite(PIN_SWITCH, HIGH);
+  }
+  return result;
 }
 
 // Application instance
