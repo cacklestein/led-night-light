@@ -154,7 +154,7 @@ public:
   
   unsigned char mode() { return mMode; }
   void setMode(int value) { mMode = bound(value, MODE_MAX); }
-  void addMode(int value) { mMode += value; mMode %= MODE_MAX; }
+  void addMode(int value) { mMode += value; mMode %= (MODE_MAX + 1); }
   int hue() { return mHue; }
   void setHue(int value) { mHue = value % 360; }
   void addHue(int value) { setHue(mHue + value); }
@@ -193,10 +193,14 @@ App::App()
 }
 
 void App::setup(void) {
+#ifdef PIN_JUMPER_1  
   pinMode(PIN_JUMPER_1, INPUT);
   digitalWrite(PIN_JUMPER_1, HIGH);
+#endif
+#ifdef PIN_JUMPER_2  
   pinMode(PIN_JUMPER_2, INPUT);
   digitalWrite(PIN_JUMPER_2, HIGH);
+#endif
 
   pinMode(PIN_SWITCH, INPUT);     // Switch is input
   digitalWrite(PIN_SWITCH, HIGH); // enable internal pullup
@@ -210,7 +214,9 @@ void App::setup(void) {
   digitalWrite(PIN_IR_VCC, HIGH);
 #endif
 
+#ifdef PIN_JUMPER_1
   setMode(((checkJumper(PIN_JUMPER_1) == JUMPER_B) ? 1 : 0) + (checkJumper(PIN_JUMPER_2) == JUMPER_B ? 2 : 0));
+#endif
 
   strip.begin();
   strip.show();
