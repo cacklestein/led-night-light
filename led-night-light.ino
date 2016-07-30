@@ -312,22 +312,23 @@ void App::loop(void) {
 #define MODE_RANDOM 2
 #define MODE_RAINBOW 3
 #ifndef __AVR_ATtiny85__
-    Serial.print(irValue, HEX);
-    Serial.print(" (");
-    Serial.print(hue());
-    Serial.print(",");
-    Serial.print(saturation());
-    Serial.print(",");
-    Serial.print(brightness());
-    Serial.println(")");
-    hsvToRgb(hue(), saturation(), brightness(), red, green, blue);
-    Serial.print(" --> (");
-    Serial.print(red);
-    Serial.print(",");
-    Serial.print(green);
-    Serial.print(",");
-    Serial.print(blue);
-    Serial.println(")");
+    Serial.print("0x");
+    Serial.println(irValue, HEX);
+//    Serial.print(" (");
+//    Serial.print(hue());
+//    Serial.print(",");
+//    Serial.print(saturation());
+//    Serial.print(",");
+//    Serial.print(brightness());
+//    Serial.println(")");
+//    hsvToRgb(hue(), saturation(), brightness(), red, green, blue);
+//    Serial.print(" --> (");
+//    Serial.print(red);
+//    Serial.print(",");
+//    Serial.print(green);
+//    Serial.print(",");
+//    Serial.print(blue);
+//    Serial.println(")");
 #endif
   }
   
